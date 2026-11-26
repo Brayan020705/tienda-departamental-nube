@@ -31,6 +31,44 @@ services:
     networks:
       - tienda-net
 
+  api_catalogo:
+    build: ./servicio-catalogo
+    container_name: api_catalogo
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongo_catalogo
+      - redis_carrito
+    networks:
+      - tienda-net
+
+  api_carrito:
+    build: ./servicio-carrito
+    container_name: api_carrito
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis_carrito
+    networks:
+      - tienda-net
+
+  api_ordenes:
+    build: ./servicio-ordenes
+    container_name: api_ordenes
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8003:8003"
+    depends_on:
+      - postgres_ordenes
+      - api_carrito
+      - api_catalogo
+    networks:
+      - tienda-net
+
 volumes:
   pg_data:
   mongo_data:
